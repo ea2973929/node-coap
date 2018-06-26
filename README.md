@@ -225,6 +225,8 @@ The constructor can be given an optional options object, containing one of the f
 * `piggybackReplyMs`: set the number of milliseconds to wait for a
   piggyback response. Default 50.
 * `sendAcksForNonConfirmablePackets`: Optional. Use this to suppress sending ACK messages for non-confirmable packages
+* `cache`: Optional. Use this to specify a custom caching solution for block2 payloads, instead of the default JSON map with timeout.
+  The value must contain 4 functions, as specified [below](#block2cache).
 
 #### Event: 'request'
 
@@ -451,6 +453,62 @@ messages.
 #### reset()
 Returns a Reset COAP Message to the sender. The RST message will appear as an empty message with code `0.00` and the
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
+
+-------------------------------------------------------
+<a name="block2cache"></a>
+### Block2 Cache
+
+If the `cache` object is specified in the options object when creating a coap server, 
+then this object MUST contain the four functions defined below.
+
+There is no guarantee made that 'clear' will be called for each key. 
+You must ensure that stagnant key-value pairs are removed from the cache.
+
+#### store(key, value)
+Stores the given key-value pair in the cache
+
+#### retrieve(key)
+Retrieves the cached value. Returns null or undefined if it doesn't exist.
+
+### remove(key)
+Removes the given key-value pair from the cache
+
+### clear()
+Completely clears the cache. This is only called when the coap server is closed.
+
+### Example:
+
+An example of a (rather terrible) custom caching solution is below:
+
+```js
+  class CacheManager {
+      constructor() {
+          this.cache = new Map();
+      }
+
+      store(key, value) {
+          this.cache.set(key, value);
+      }
+
+      retrieve(key) {
+          return this.cache.get(key);
+      }
+
+      remove(key) {
+          this.cache.delete(key);
+      }
+
+      clear() {
+          this.cache.clear();
+      }
+  }
+
+  coap.createServer({
+      cache: new CacheManager()
+  });
+```
+
+Obviously, this should be further extended to remove stagnant key-value pairs.
 
 -------------------------------------------------------
 <a name="registerOption"></a>
