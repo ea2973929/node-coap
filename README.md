@@ -464,19 +464,20 @@ then this object MUST contain the four functions defined below.
 There is no guarantee made that 'clear' will be called for each key. 
 You must ensure that stagnant key-value pairs are removed from the cache.
 
-#### store(key, value)
-Stores the given key-value pair in the cache
+#### store(key, value, req)
+Stores the given key-value pair in the cache. 
+Also provides the [IncomingMessage](#incoming) object
 
 #### retrieve(key)
 Retrieves the cached value. Returns null or undefined if it doesn't exist.
 
-### remove(key)
+#### remove(key)
 Removes the given key-value pair from the cache
 
-### clear()
+#### clear()
 Completely clears the cache. This is only called when the coap server is closed.
 
-### Example:
+#### Example:
 
 An example of a (rather terrible) custom caching solution is below:
 
@@ -486,7 +487,7 @@ An example of a (rather terrible) custom caching solution is below:
           this.cache = new Map();
       }
 
-      store(key, value) {
+      store(key, value, req) {
           this.cache.set(key, value);
       }
 
