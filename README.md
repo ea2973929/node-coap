@@ -225,6 +225,9 @@ The constructor can be given an optional options object, containing one of the f
 * `piggybackReplyMs`: set the number of milliseconds to wait for a
   piggyback response. Default 50.
 * `sendAcksForNonConfirmablePackets`: Optional. Use this to suppress sending ACK messages for non-confirmable packages
+* `forceCopyBlockBuffs`: Optional. Use this to specify whether the library should slice(false) or copy(true) the block from
+  the given payload, when a client token is not specified. If transfering large files, and clients do not specify tokens,
+  and the payload being sent back to the client is re-allocated for each request: set this to true to reduce memory usage. Default false.
 * `cache`: Optional. Use this to specify a custom caching solution for block2 payloads, instead of the default JSON map with timeout.
   The value must contain 4 functions, as specified [below](#block2cache).
 
